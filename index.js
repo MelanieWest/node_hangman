@@ -3,56 +3,94 @@ const inquirer = require("inquirer");
 const jsonfile = require("jsonfile");
 const colors = require("colors");
 
-const BasicCard = require("./Words.js");
-const ClozeCard = require("./Letters.js");
+const Words = require("./Words.js");
+const Letters = require("./Letters.js");
 
-var count = 0;
-var correct = 0;
-var answer;
-var card = [];
-var partial = [];
+function wordCreate(){      //create the word objects first
+  
+    word[0] = new Words('pizza');
+    word[1] = new Words('nachos');
+    word[2] = new Words('apple');
+    word[3] = new Words('guacamole');
+    word[4] = new Words('jellybean');
+
+    for(var j=0; j<word.length; j++){
+        var file = 'words.json'
+        var obj = JSON.stringify(word[j])+',\n';
+
+        
+        fs.appendFile(file, obj, (err) => {
+            if (err) throw err;
+        });
+    }
+}
+
+let displayWord = [];
+const letters = ['a','b','c','d','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']; 
+
+wordCreate();       //call the constructor function to create the word objects before beginning
+
 
 inquirer.prompt(
 {
     type: "list",
-    message: "Which review method do you prefer?",
-    choices: ["cloze","basic"],
-    name: "whichCard",
+    message: "Would you like a new word?",
+    choices: ["yes","no"],
+    name: "ready",
 }
 ).then(function(response){
     //console.log('then function');
 
 
-    if(response.whichCard == 'basic'){
+    if(response.ready == 'yes'){
         console.log('\n');
-        basicCardReview();
+        selectWord();
     }else{
         console.log('\n');
-        clozeCardReview();
+        console.log('have a nice day');
     }
 
-})  //end of prompt for card choice
+})  //end of prompt for new word
 
-function basicCardReview(){
-    BasicCard.choices = ["Mercury","Venus","Earth","Mars","Jupiter","Saturn","Uranus","Neptune","Pluto"];
-    //console.log(BasicCard.choices); 
-    basicCardCreate();   //create the question cards
-    basicQuestions();   //ask questions
+//
 
+let count = 0;
+let letter =[];
+var displayWord ='';
+
+//this function does initial setup for word choice and display of blanks.  It does not get called again
+//until a new word is needed
+
+function selectWord(){
+    const choices = ['a','b','c','d','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']; 
+    var currentWord = word[count]
+   for(i=0; i<currentWord.length; i++){
+       letter[i] = new Letters(currentWord[i]);     //set up letter object initial values here (blank and not guessed)
+       displayWord += letter[i].letter;
+   }
+
+    displayWord.join(' ');      //displayWord is a temp holder.  go back to the letter objects each time after this.
+    console.log(displayWord);
+
+    return displayWord;
+    wordDisplay();   //display the current word with guessed letters inserted
+    count++;    //go to the next word when this is called again
 }
 
+//this function will be recursively called until the word is guessed.
 
-function basicQuestions(){   //this is recursive.  Only needs one call.
+function wordDisplay(){   
     
-//console.log("questions has been called\n");
+ console.log('the display word is: ',displayWord);
+
 
 //ask the questions and score answers. Then call function again.
 inquirer
 .prompt ([
     {         
         type: "list",
-        message: "Front of flashcard:\n "+card[count].front+"\n",
-        choices: card[count].choices,
+        message: displayWord,
+        choices: letters,
         name: "answer"
     }
 
@@ -61,114 +99,24 @@ inquirer
         throw error;
     };
 
-    //write out the back of the card
-    console.log("Back of flashcard: "+ card[count].back);
+    //here is where I will need to check the letter and call wordDisplay() again after updating
+    //all the 'letter' object properties, using my letterGuess(letter) function
 
-    if(response.answer == card[count].back){correct ++;}
-    count ++;
-    
-    if (count < card.length){     //reset the # for how many questions
-        console.log("The count is: "+count+'\n');
-        console.log('You have %s correct answers'.inverse,correct,'\n');
-        basicQuestions();
-    }
-    else if(count === card.length){
-        console.log(' You have %s correct answers '.inverse,correct,'\n');            
-        console.log("Good game!");
-    }
+    console.log(response);
+    letterGuess(response);
+   
 
 });  // end of then
    
-}       //end of basicQuestion function
+}       //end of wordDisplay function
 
+function letterGuess(letter){
+    //code for guessing the letter
+    console.log('letter guess');
+    //properties to look at or reset:
+    // the .letter property
+    //the .guess property 
+    //the .display property 
+    //pass through the whole letters array
+}
 
-
-
-function clozeCardReview(){
-  clozeCardCreate();
-  clozeQuestions();
-};
-
-clozeCardCreate();   // create question cards for cloze
-
-
-function clozeQuestions(){   //this is recursive.  Only needs one call.
-
-    console.log("(Capitalize any planet names)\n");
-
-    //ask the questions and score answers. Then call function again.
-    inquirer
-    .prompt ([
-
-        {
-            type: "input",
-            message: "Finish this message:\n "+ card[count].partial()+"\n",
-            name: "answer"
-        }
-
- 
-
-   ]).then(function(response,error){
-
-        if(error){
-            throw error;
-        };
-
-        //write out the correct answer
-        console.log("Completed text: "+card[count].text);
-
-        if(response.answer == card[count].cloze){correct ++;}
-        count ++;
-        
-        if (count < card.length){     //reset the # for how many questions
-            console.log("The count is: "+count+'\n');
-            console.log(' You have %s correct answers '.inverse,correct,'\n');            
-            clozeQuestions();
-        }else if(count === card.length){
-            console.log(' You have %s correct answers '.inverse,correct,'\n');            
-            console.log("Good game!");
-        }
- 
-    });           //end 'then'
-
-
-}       //end of question function
-
-function basicCardCreate(){
-
-    card[0] = new BasicCard("Which planet do you live on?","Earth");
-    card[1] = new BasicCard("Which planet isn't a planet anymore?","Pluto")
-    card[2] = new BasicCard("Which planet has rings?","Saturn")
-    card[3] = new BasicCard("Which planet is the largest in our solar system?","Jupiter")
-    card[4] = new BasicCard("Which planet is named for a mythical Sea God?","Neptune")
-
-  
-    for(var j=0; j<card.length; j++){
-        var file = 'basicCards.json'
-        var obj = JSON.stringify(card[j])+',\n';
-
-        
-        fs.appendFile(file, obj, (err) => {
-            if (err) throw err;
-        });
-    }
-
-}       //end of basic card create function
-
-function clozeCardCreate(){
-    card[0] = new ClozeCard("Most of earth's energy comes from the sun","the sun");
-    card[1] = new ClozeCard("Planets discovered outside our solar system are called exoplanets","exoplanets");
-    card[2] = new ClozeCard("For the planet Mercury, one day is the same as one year","Mercury");
-    card[3] = new ClozeCard("Jupiter has more moons than any other planet in our solar system","Jupiter");
-    card[4] = new ClozeCard("The planet Venus rotates in the opposite direction from all the other planets","Venus");
-
-     
-    for(var j=0; j<card.length; j++){
-        var file = 'clozeCards.json'
-        var obj = JSON.stringify(card[j])+',\n';
-
-        fs.appendFile(file, obj, (err) => {
-            if (err) throw err;
-        });
-    }
-}       //end of cloze card create function
