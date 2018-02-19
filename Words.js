@@ -2,7 +2,7 @@ console.log("Words");
 
 var Words =function(word){
     //still need to create 'partial' & error detection method
-    this.word = word;
+    this.name = word;
     this.length = word.length;
     this.misses = 10;
     this.guessed = false;

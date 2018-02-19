@@ -1,6 +1,7 @@
 var Letters =function(letter){
     //object definition here
-    this.letter = letter;
+
+    this.char = letter;
     this.display   = '_';
     this.guessed = false; 
 }

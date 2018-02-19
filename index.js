@@ -5,6 +5,16 @@ const colors = require("colors");
 
 const Words = require("./Words.js");
 const Letters = require("./Letters.js");
+const word = [];        //it will be an array of objects
+
+let count = 0;
+let letter =[];         //it will be an array of objects
+var displayWord ='';
+var currentWord = '';
+
+const choices = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']; 
+
+
 
 function wordCreate(){      //create the word objects first
   
@@ -25,11 +35,14 @@ function wordCreate(){      //create the word objects first
     }
 }
 
-let displayWord = [];
-const letters = ['a','b','c','d','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']; 
+
 
 wordCreate();       //call the constructor function to create the word objects before beginning
+newWordPrompt();    //prompt for the first word
 
+
+
+function newWordPrompt(){
 
 inquirer.prompt(
 {
@@ -44,44 +57,58 @@ inquirer.prompt(
 
     if(response.ready == 'yes'){
         console.log('\n');
-        selectWord();
+        selectWord();   //this selects the next word in the array and displays the right number of blanks
+
     }else{
         console.log('\n');
         console.log('have a nice day');
     }
 
-})  //end of prompt for new word
+})
 
-//
+}  //end of newWordPrompt
 
-let count = 0;
-let letter =[];
-var displayWord ='';
-
+    
 //this function does initial setup for word choice and display of blanks.  It does not get called again
 //until a new word is needed
 
 function selectWord(){
-    const choices = ['a','b','c','d','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']; 
-    var currentWord = word[count]
+    currentWord = word[count];
+    //console.log(currentWord.name);
+
    for(i=0; i<currentWord.length; i++){
-       letter[i] = new Letters(currentWord[i]);     //set up letter object initial values here (blank and not guessed)
-       displayWord += letter[i].letter;
+
+       //create letter objects
+       letter[i] = new Letters(currentWord.name[i]);     //set up letter object initial values here (blank and not guessed)
+         //store letter data in a file
+       var file = 'letters.json'
+       var obj = JSON.stringify(letter[i])+',\n';
+
+       fs.appendFile(file, obj, (err) => {
+           if (err) throw err;
+       });
    }
 
-    displayWord.join(' ');      //displayWord is a temp holder.  go back to the letter objects each time after this.
-    console.log(displayWord);
+  
+    wordDisplay();   //this function is recursive - it will call itself until the end
 
-    return displayWord;
-    wordDisplay();   //display the current word with guessed letters inserted
     count++;    //go to the next word when this is called again
+    return currentWord;
 }
+
+
 
 //this function will be recursively called until the word is guessed.
 
 function wordDisplay(){   
-    
- console.log('the display word is: ',displayWord);
+
+ displayWord = '';       //reset each time
+
+ for(i=0; i<currentWord.length; i++){
+    displayWord += letter[i].display+' ';   
+}
+
+//console.log(displayWord);
 
 
 //ask the questions and score answers. Then call function again.
@@ -89,8 +116,8 @@ inquirer
 .prompt ([
     {         
         type: "list",
-        message: displayWord,
-        choices: letters,
+        message: 'Guess this word: '+ displayWord,
+        choices: choices,
         name: "answer"
     }
 
@@ -102,21 +129,46 @@ inquirer
     //here is where I will need to check the letter and call wordDisplay() again after updating
     //all the 'letter' object properties, using my letterGuess(letter) function
 
-    console.log(response);
-    letterGuess(response);
-   
+    //console.log(response);
+    letterGuess(response.answer);
+
 
 });  // end of then
    
 }       //end of wordDisplay function
 
-function letterGuess(letter){
+
+
+function letterGuess(ans){
     //code for guessing the letter
-    console.log('letter guess');
-    //properties to look at or reset:
-    // the .letter property
-    //the .guess property 
-    //the .display property 
-    //pass through the whole letters array
+    //console.log('letter guess');
+
+    //set to true until proven false
+    currentWord.guessed = true;
+    let flag = 1;
+
+    for(i=0; i<currentWord.length; i++){
+        if(!letter[i].guessed && ans === letter[i].char){
+            letter[i].display = ans;
+            letter[i].guessed = true;
+            flag = 0;
+        }
+        else if(!letter[i].guessed){
+            currentWord.guessed=false
+            //if any letters still aren't guessed, then the word isn't guessed
+        }
+    }
+
+    //if the flag=1 still, then the letter wasn't a good guess
+
+    if(flag){currentWord.countdown();}
+    if(currentWord.guessed){
+        console.log('Good job! You guessed it!');
+        newWordPrompt();
+    }else{
+        wordDisplay();      //display the updated word
+    }
+
 }
+
 
