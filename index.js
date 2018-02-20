@@ -11,6 +11,7 @@ let count = 0;          //this is used to increment the selected word
 let letter =[];         //it will be an array of objects
 var displayWord ='';
 var currentWord = '';
+var guessedLetters = [];    //set up an array to check for duplicate guesses
 
 //I didn't want to use regex, so I just have a super-long list of choices
 const choices = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']; 
@@ -30,7 +31,7 @@ newWordPrompt();    //prompt for the first word
 function wordCreate(){ 
   
     word[0] = new Words('flower');
-    word[1] = new Words('bird');
+    word[1] = new Words('dove');
     word[2] = new Words('unicorn');
     word[3] = new Words('smiley');
     word[4] = new Words('rainbow');
@@ -102,10 +103,16 @@ function selectWord(){
 
     }
 
-    count++;    //go to the next word when this is called again
-    if(count>word.length){count=0;} //reset the count if it goes too high
+    count++;
 
-    wordDisplay();   //this uses letter properties to display the guessed letters or blanks
+    //test if they have used up all the words
+
+    if(count===word.length){
+        console.log("Good game!".red);
+    }else{
+        wordDisplay();   //this uses letter properties to display the guessed letters or blanks
+    }
+
 
     return currentWord;
 }
@@ -122,7 +129,7 @@ function wordDisplay(){
         displayWord += letter[i].display+' ';   
     }
 
-    console.log(displayWord);
+    console.log('\n',displayWord.blue,'\n');
 
     //prompt for a new guess if the word is not complete
 
@@ -154,7 +161,29 @@ inquirer
     //all the 'letter' object properties, using my letterGuess(letter) function
 
     //console.log(response);
-    letterGuess(response.answer);
+
+
+
+    for(k=0;k<guessedLetters.length;k++){       //I got in trouble with this.  remove for now
+        var duplicate = false;
+
+        //test for a duplicate guess before proceeding
+        if(response.answer === guessedLetters[k]){
+            console.log('You have already guessed the letter ',response.answer);
+            wordDisplay();
+            duplicate = true;
+        }
+
+    }
+
+
+    //if it's not a duplicate, add it to the list and proceed with evaluating the guess
+    if(!duplicate){
+        guessedLetters.push(response.answer);
+        console.log(guessedLetters);
+        letterGuess(response.answer);
+    }
+    
 
 
 });  // end of then
@@ -202,6 +231,7 @@ function letterGuess(ans){
         //console.log('word: '+currentWord.name);      //display the answer
         wordDisplay();      //display the completed word
         console.log('Good job! You guessed it!');
+        guessedLetters=[];      //reset the array of guessed letters
         newWordPrompt();     //offer a new word
     }else{      //correct guess but incomplete word
         wordDisplay();      //display the updated word
