@@ -9,11 +9,9 @@ var Words =function(word){
 
 //decrement misses remaining if an incorrect guess was made 
      this.countdown = function(){
-        //this assumes an incorrect guess.  Add logic if that evaluation needs to be made here
-        var misses = this.misses;
-        misses--;
-        console.log('You have %s misses remaining \n',misses);   
-        return misses;    
+        this.misses--;
+        console.log('You have %s misses remaining \n',this.misses);   
+        return this.misses;    
      }  
 }
 
