@@ -1,4 +1,4 @@
-console.log("Words");
+//console.log("Words");
 
 var Words =function(word){
     //still need to create 'partial' & error detection method

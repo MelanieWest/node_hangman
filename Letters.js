@@ -5,6 +5,6 @@ var Letters =function(letter){
     this.display   = '_';
     this.guessed = false; 
 }
-console.log("Letters");
+//console.log("Letters");
 
 module.exports = Letters;
