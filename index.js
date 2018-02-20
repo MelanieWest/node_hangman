@@ -103,6 +103,7 @@ function selectWord(){
     }
 
     count++;    //go to the next word when this is called again
+    if(count>word.length){count=0;} //reset the count if it goes too high
 
     wordDisplay();   //this uses letter properties to display the guessed letters or blanks
 
