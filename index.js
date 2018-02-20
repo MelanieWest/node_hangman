@@ -107,7 +107,7 @@ function wordDisplay(){
         displayWord += letter[i].display+' ';   
     }
 
-    //console.log(displayWord);
+    console.log(displayWord);
 
     //prompt for a new guess if the word is not complete
 
@@ -125,7 +125,7 @@ inquirer
 .prompt ([
     {         
         type: "list",
-        message: 'Guess this word: '+ displayWord,
+        message: 'Guess a letter: ',
         choices: choices,
         name: "answer"
     }
@@ -179,8 +179,8 @@ function letterGuess(ans){
         }
     }
     if(currentWord.guessed){
-        console.log('word: '+currentWord.name);      //display the answer
-        wordDisplay();      //display the completed word (this doesn't work...)
+        //console.log('word: '+currentWord.name);      //display the answer
+        wordDisplay();      //display the completed word
         console.log('Good job! You guessed it!');
         newWordPrompt();     //offer a new word
     }else{
