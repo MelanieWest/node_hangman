@@ -8,7 +8,10 @@ const Letters = require("./Letters.js");
 const word = [];        //it will be an array of objects
 
 let count = 0;          //this is used to increment the selected word
-let letter =[];         //it will be an array of objects
+let wins = 0;
+let losses = 0;
+
+let  letter =[];         //it will be an array of objects
 var displayWord ='';
 var currentWord = '';
 var guessedLetters = [];    //set up an array to check for duplicate guesses
@@ -55,6 +58,15 @@ function wordCreate(){
 
 function newWordPrompt(){
 
+//do we have any more words?
+
+if(count === word.length){
+    //if no more words, end the game
+    console.log("Good game!".red);
+
+}else{
+//if there are more words, give the option to continue
+
 inquirer.prompt(
 {
     type: "list",
@@ -76,7 +88,7 @@ inquirer.prompt(
     }
 
 })
-
+}   //end of if-else block
 }  //end of newWordPrompt
 
   
@@ -105,15 +117,15 @@ function selectWord(){
 
     count++;
 
-    //test if they have used up all the words
+    // //test if they have used up all the words
+    //(for now, move this decision to before the prompt)
+    // if(count===word.length){
+    //     console.log("Good game!".red);
+    // }else{
+    //     wordDisplay();   //this uses letter properties to display the guessed letters or blanks
+    // }
 
-    if(count===word.length){
-        console.log("Good game!".red);
-    }else{
-        wordDisplay();   //this uses letter properties to display the guessed letters or blanks
-    }
-
-
+    wordDisplay();
     return currentWord;
 }
 
@@ -220,19 +232,29 @@ function letterGuess(ans){
 
     if(flag){       //incorrect guess
         currentWord.countdown();
-        if(currentWord.misses==0){
+        if(currentWord.misses==0){  //count as a loss and restart
+
             console.log("Sorry!  You're out of guesses.  The word was: ");
             console.log(currentWord.name);
+            losses++;
+            console.log("Wins: ",wins,'\n',"Losses: ",losses);
             newWordPrompt();
+
         }else{
             wordDisplay();
         }
     }else if(currentWord.guessed){  //all correctly guessed
+        //count as a win and restart
+
         //console.log('word: '+currentWord.name);      //display the answer
         wordDisplay();      //display the completed word
         console.log('Good job! You guessed it!');
+        wins++;
+
         guessedLetters=[];      //reset the array of guessed letters
+        console.log("Wins: ",wins,'\n',"Losses: ",losses);
         newWordPrompt();     //offer a new word
+        
     }else{      //correct guess but incomplete word
         wordDisplay();      //display the updated word
     }
