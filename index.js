@@ -84,7 +84,7 @@ inquirer.prompt(
 
     }else{
         console.log('\n');
-        console.log('have a nice day');
+        console.log('Have a nice day!'.purple);
     }
 
 })
@@ -117,13 +117,6 @@ function selectWord(){
 
     count++;
 
-    // //test if they have used up all the words
-    //(for now, move this decision to before the prompt)
-    // if(count===word.length){
-    //     console.log("Good game!".red);
-    // }else{
-    //     wordDisplay();   //this uses letter properties to display the guessed letters or blanks
-    // }
 
     wordDisplay();
     return currentWord;
@@ -131,7 +124,7 @@ function selectWord(){
 
 
 
-//this function will be recursively called until the word is guessed.
+
 
 function wordDisplay(){   
 
@@ -176,7 +169,7 @@ inquirer
 
 
 
-    for(k=0;k<guessedLetters.length;k++){       //I got in trouble with this.  remove for now
+    for(k=0;k<guessedLetters.length;k++){  
         var duplicate = false;
 
         //test for a duplicate guess before proceeding
@@ -234,8 +227,8 @@ function letterGuess(ans){
         currentWord.countdown();
         if(currentWord.misses==0){  //count as a loss and restart
 
-            console.log("Sorry!  You're out of guesses.  The word was: ");
-            console.log(currentWord.name);
+            console.log("Sorry!  You're out of guesses.  The word was: ".red);
+            console.log(currentWord.name.yellow);
             losses++;
             console.log("Wins: ",wins,'\n',"Losses: ",losses);
             newWordPrompt();
