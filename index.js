@@ -84,7 +84,7 @@ inquirer.prompt(
 
     }else{
         console.log('\n');
-        console.log('Have a nice day!'.purple);
+        console.log('Have a nice day!'.rainbow);
     }
 
 })
@@ -174,7 +174,7 @@ inquirer
 
         //test for a duplicate guess before proceeding
         if(response.answer === guessedLetters[k]){
-            console.log('You have already guessed the letter ',response.answer);
+            console.log('You have already guessed the letter '.magenta,response.answer);
             wordDisplay();
             duplicate = true;
         }
@@ -185,7 +185,7 @@ inquirer
     //if it's not a duplicate, add it to the list and proceed with evaluating the guess
     if(!duplicate){
         guessedLetters.push(response.answer);
-        console.log(guessedLetters);
+        console.log(guessedLetters.join(' ').random);
         letterGuess(response.answer);
     }
     
